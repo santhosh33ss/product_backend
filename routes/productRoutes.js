@@ -1,18 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const auth = require('../middleware/au_middleware');
-// const upload = require('../middleware/upload');
-// const { createProduct } = require('../controllers/productcontroller');
-
-// // Single image upload
-// router.post('/single', auth, upload.single('image'), createProduct);
-
-// // Multiple image upload
-// router.post('/multiple', auth, upload.array('images', 5), createProduct);
-
-// module.exports = router;
-
-
 
 const express = require('express');
 const router = express.Router();
