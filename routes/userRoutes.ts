@@ -1,16 +1,15 @@
-
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const auth = require('../middleware/au_middleware');
+import express, { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/user';
+import auth from '../middleware/au_middleware';
+import { someAsyncController } from '../controllers/productcontroller';
 
 const router = express.Router();
-
+router.get('/', someAsyncController);
 // @route   POST /api/auth/register
 // @desc    Register user
-
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
 
   try {
@@ -25,18 +24,18 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '1h' });
 
     res.json({ token });
   } catch (err) {
-    console.error(err.message);
+    console.error((err as Error).message);
     res.status(500).send('Server error');
   }
 });
 
 // @route   POST /api/auth/login
 // @desc    Authenticate user & get token
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
@@ -47,18 +46,18 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
 
     const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '1h' });
 
     res.json({ token });
   } catch (err) {
-    console.error(err.message);
+    console.error((err as Error).message);
     res.status(500).send('Server error');
   }
 });
 
 // @route   GET /api/auth/user
 // @desc    Get logged in user
-router.get('/user', auth, async (req, res) => {
+router.get('/user', auth, async (req: Request & { user?: any }, res: Response) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
@@ -67,4 +66,4 @@ router.get('/user', auth, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
