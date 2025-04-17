@@ -1,72 +1,46 @@
-import express, { Express } from 'express';
-import mongoose from 'mongoose';
+import './cron/cleanupTask'; // Ensure cron jobs are initialized on server start
+
+import express from 'express';
 import dotenv from 'dotenv';
-// import cors from 'cors';
+import mongoose from 'mongoose';
+import userRoutes from './routes/user.routes';
+import productRoutes from './routes/product.routes';
 import path from 'path';
 
-import userRoutes from './routes/userRoutes';
-import productRoutes from './routes/productsRoutes';
+import bodyParser from 'body-parser';
+import mailRoutes from './routes/mail.routes';
+import { startCronJobs ,
+    emailReminderJob,
+    databaseBackupJob
+} from './cron/cronjobs';
+
+startCronJobs();
+databaseBackupJob();
+emailReminderJob();
 
 dotenv.config();
 
-const app: Express = express();
+const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-// app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// Serve uploaded images statically
+// Middleware
+app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// API routes
-app.use('/api/auth', userRoutes);         // For registration & login
-app.use('/api/products', productRoutes);  // For CRUD product APIs
+// Routes
+app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/emails', mailRoutes);
 
-// Connect to MongoDB and start server
+// DB Connect
 mongoose
-  .connect(process.env.MONGO_URI || '', {
-    dbName: 'productApp',
-  })
+  .connect(process.env.MONGO_URI!)
   .then(() => {
     console.log('MongoDB connected');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-  });
+  .catch((err) => console.error(err));
 
 
-
-
-
-
-// import express from 'express';
-// import mongoose from 'mongoose';
-// import dotenv from 'dotenv';
-// import userRoutes from './routes/userRoutes';
-// import productRoutes from './routes/productsRoutes';
-// import path from 'path';
-
-
-// // app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-// // app.use('/api/products', productRoutes);
-// dotenv.config();
-
-// const app = express();
-// app.use(express.json());
-
-// app.use('/api/auth', userRoutes);
-
-// mongoose
-// .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/products')
-// .then(() => {
-//     console.log('MongoDB connected...');
-//     app.listen(process.env.PORT || 5000, () =>
-//         console.log(`Server running on http://localhost:${process.env.PORT || 5000}`)
-// );
-// })
-// .catch((err) => console.error('MongoDB connection failed:', err));
