@@ -44,11 +44,3 @@ export const sendMail = async (req: Request, res: Response) => {
 };
 
 
-
-
-
-
-
-
-
-

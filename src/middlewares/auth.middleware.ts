@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.model'; // adjust based on your structure
   
 
+
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.headers.authorization?.split(' ')[1];

@@ -1,12 +1,12 @@
 import './cron/cleanupTask'; // Ensure cron jobs are initialized on server start
-
+// import app from './app';
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import userRoutes from './routes/user.routes';
 import productRoutes from './routes/product.routes';
 import path from 'path';
-
+// import './cronJobs/emailScheduler';
 import bodyParser from 'body-parser';
 import mailRoutes from './routes/mail.routes';
 import { startCronJobs ,
@@ -14,9 +14,9 @@ import { startCronJobs ,
     databaseBackupJob
 } from './cron/cronjobs';
 
-startCronJobs();
-databaseBackupJob();
-emailReminderJob();
+// startCronJobs();
+// databaseBackupJob();
+// emailReminderJob();
 
 dotenv.config();
 
@@ -43,4 +43,7 @@ mongoose
   })
   .catch((err) => console.error(err));
 
+
+  //json test file
+  // "test": "echo \"Error: no test specified\" && exit 1",
 
